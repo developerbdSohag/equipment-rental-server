@@ -48,7 +48,7 @@ router.post('/create-checkout-session', verifyToken, async (req, res) => {
           line_items: [
             {
               price_data: {
-                currency: 'usd',
+                currency: 'bdt',
                 product_data: {
                   name: `Rental: ${booking.equipmentName}`,
                   description: `Duration: ${booking.durationDays} day(s) | Qty: ${booking.quantity}`,
@@ -138,7 +138,7 @@ router.post('/verify', verifyToken, async (req, res) => {
       customerEmail: booking.customerEmail,
       ownerEmail: booking.ownerEmail,
       amount: booking.totalAmount,
-      currency: 'usd',
+      currency: 'bdt',
       transactionId,
       paymentMethod: 'Stripe Card',
       paymentDate: new Date().toISOString(),

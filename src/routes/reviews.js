@@ -16,38 +16,38 @@ router.get('/', async (req, res) => {
       const defaultReviews = [
         {
           _id: 'rev_1',
-          customerName: 'Sarah Jenkins',
-          role: 'Independent Filmmaker',
+          customerName: 'Engr. Tanvir Ahmed',
+          role: 'Project Director, Mirpur Flyover Subcontract',
           rating: 5,
-          comment: 'Rented the Sony FX3 cinema package for a 4-day commercial shoot. Equipment was in mint condition, clean sensors, and the owner was very cooperative.',
-          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
+          comment: 'Rented the 20-ton CAT excavator for our foundation earthwork. Delivered on-site at Tejgaon on time, zero hydraulic leaks, and verified documentation. Excellent platform.',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
           date: '2026-11-10'
         },
         {
           _id: 'rev_2',
-          customerName: 'David Miller',
-          role: 'General Contractor',
+          customerName: 'Rahim Chowdhury',
+          role: 'Managing Partner, Bay Heavy Cargo Ltd, Chattogram',
           rating: 5,
-          comment: 'We needed a 20-ton excavator urgently when ours broke down on a bridge site. Found verified equipment on this platform within 2 hours. Seamless Stripe checkout!',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+          comment: 'We needed a 100-ton all-terrain mobile crane urgently for structural steel erection at Agrabad. Found certified equipment in Taka with transparent escrow payment within 2 hours.',
+          avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
           date: '2026-11-05'
         },
         {
           _id: 'rev_3',
-          customerName: 'Elena Rostova',
-          role: 'Event Producer',
+          customerName: 'Nasrin Sultana',
+          role: 'Operations Head, Shiddhirganj Industrial Hub',
           rating: 5,
-          comment: 'Booked concert-grade line array sound systems and laser lights for our outdoor music festival. Clear rental terms and prompt delivery. Absolutely stellar platform.',
+          comment: 'Booked the Cummins 150kW silent generator during our factory substation upgrade in Narayanganj. Fuel efficiency was outstanding and the owner support was flawless.',
           avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
           date: '2026-10-28'
         },
         {
           _id: 'rev_4',
-          customerName: 'Marcus Vance',
-          role: 'AgriTech Specialist',
+          customerName: 'Kazi Farhad Hossain',
+          role: 'Civil Infrastructure Lead, Bogura Mega Project',
           rating: 5,
-          comment: 'Rented high-capacity John Deere harvesting equipment during peak season. Saved our farm thousands in downtime costs. Transparent owner communication.',
-          avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
+          comment: 'Rented heavy road rollers and wheel loaders for our regional highway construction. Saved substantial capital expenditure with daily Taka rates. Highly recommended!',
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
           date: '2026-10-18'
         }
       ];
