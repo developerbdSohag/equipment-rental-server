@@ -269,7 +269,29 @@ export async function seedDatabase() {
     }
   }
 
-  console.log(`✅ Seeded all 10 categories (${allEquipment.length} items total).`);
+  // Ensure all auxiliary catalog items also use authentic Bangladeshi locations and BDT rates
+  const bdLocationsMap = {
+    'Sony FX3 Full-Frame Cinema Package': { location: 'Dhanmondi Media Hub, Dhaka', price: 18500 },
+    'Ford F-550 Super Duty Flatbed Truck': { location: 'Halishahar Commercial Area, Chattogram', price: 35000 },
+    'John Deere 6R 195 Utility Farm Tractor': { location: 'Dinajpur Modern Agri Hub, Dinajpur', price: 28000 },
+    'DJI Matrice 350 RTK Commercial Drone': { location: 'Uttara Sector 7, Dhaka', price: 22000 },
+    'JBL VTX A8 Compact Line Array Sound System': { location: 'Gulshan-2 Convention Area, Dhaka', price: 65000 },
+    'Bobcat T770 Compact Track Loader': { location: 'Kanchpur Industrial Zone, Narayanganj', price: 28000 },
+    'RED Komodo 6K Production Kit': { location: 'Banasree Studio Hub, Dhaka', price: 20000 },
+    'Genie S-65 Telescopic Boom Lift': { location: 'Patenga Industrial Port, Chattogram', price: 32000 },
+    'Chauvet Rogue R3 Beam Stage Lights (Pack of 4)': { location: 'Mirpur DOHS Convention Zone, Dhaka', price: 15000 },
+    'Kubota M7-172 Deluxe Tractor with Loader': { location: 'Rangpur Agricultural Area, Rangpur', price: 25000 },
+    'Fluke Ti480 PRO High-Resolution Thermal Imager': { location: 'Motijheel Commercial Hub, Dhaka', price: 12000 }
+  };
+
+  for (const [name, data] of Object.entries(bdLocationsMap)) {
+    await db.collection('equipment').updateOne(
+      { name },
+      { $set: { location: data.location, rentalPrice: data.price } }
+    );
+  }
+
+  console.log(`✅ Seeded all categories with Bangladeshi locations and BDT amounts.`);
   console.log('🎉 Database seeding complete!');
 }
 
