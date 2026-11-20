@@ -228,7 +228,7 @@ export async function seedDatabase() {
       condition: 'Certified',
       brand: 'Genie',
       model: 'S-65 TraX 4WD',
-      image: 'https://images.unsplash.com/photo-1756402664856-91a90f90b70b?auto=format&fit=crop&w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80',
       terms: 'Safety harness required. Safety inspection certificate renewed monthly.',
       status: 'Approved',
       rating: 5.0,
@@ -278,16 +278,26 @@ export async function seedDatabase() {
     'JBL VTX A8 Compact Line Array Sound System': { location: 'Gulshan-2 Convention Area, Dhaka', price: 65000 },
     'Bobcat T770 Compact Track Loader': { location: 'Kanchpur Industrial Zone, Narayanganj', price: 28000 },
     'RED Komodo 6K Production Kit': { location: 'Banasree Studio Hub, Dhaka', price: 20000 },
-    'Genie S-65 Telescopic Boom Lift': { location: 'Patenga Industrial Port, Chattogram', price: 32000 },
+    'Genie S-65 Telescopic Boom Lift': { 
+      location: 'Patenga Industrial Port, Chattogram', 
+      price: 32000, 
+      image: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80' 
+    },
     'Chauvet Rogue R3 Beam Stage Lights (Pack of 4)': { location: 'Mirpur DOHS Convention Zone, Dhaka', price: 15000 },
     'Kubota M7-172 Deluxe Tractor with Loader': { location: 'Rangpur Agricultural Area, Rangpur', price: 25000 },
-    'Fluke Ti480 PRO High-Resolution Thermal Imager': { location: 'Motijheel Commercial Hub, Dhaka', price: 12000 }
+    'Fluke Ti480 PRO High-Resolution Thermal Imager': { 
+      location: 'Motijheel Commercial Hub, Dhaka', 
+      price: 12000, 
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80' 
+    }
   };
 
   for (const [name, data] of Object.entries(bdLocationsMap)) {
+    const updateFields = { location: data.location, rentalPrice: data.price };
+    if (data.image) updateFields.image = data.image;
     await db.collection('equipment').updateOne(
       { name },
-      { $set: { location: data.location, rentalPrice: data.price } }
+      { $set: updateFields }
     );
   }
 

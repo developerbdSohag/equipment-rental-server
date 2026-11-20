@@ -17,16 +17,16 @@ router.get('/categories', async (req, res) => {
   try {
     const db = getDB();
     const categoriesList = [
-      { id: 'excavators', name: 'Excavators', count: 0, image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80' },
-      { id: 'cranes', name: 'Cranes', count: 0, image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=600&q=80' },
-      { id: 'generators', name: 'Generators', count: 0, image: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=600&q=80' },
-      { id: 'forklifts', name: 'Forklifts', count: 0, image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80' },
-      { id: 'bulldozers', name: 'Bulldozers', count: 0, image: 'https://images.unsplash.com/photo-1579273166152-d725a4e2b755?auto=format&fit=crop&w=600&q=80' },
-      { id: 'loaders', name: 'Loaders', count: 0, image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80' },
-      { id: 'concrete-mixers', name: 'Concrete Mixers', count: 0, image: 'https://images.unsplash.com/photo-1590069261209-f8e9b8642343?auto=format&fit=crop&w=600&q=80' },
+      { id: 'excavators', name: 'Excavators', count: 0, image: 'https://images.unsplash.com/photo-1503708928676-1cb796a0891e?auto=format&fit=crop&w=600&q=80' },
+      { id: 'cranes', name: 'Cranes', count: 0, image: 'https://images.unsplash.com/photo-1575538633395-c773c6ea252d?auto=format&fit=crop&w=600&q=80' },
+      { id: 'generators', name: 'Generators', count: 0, image: 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Dieselgenerator.jpg' },
+      { id: 'forklifts', name: 'Forklifts', count: 0, image: 'https://images.unsplash.com/photo-1645736315000-6f788915923b?auto=format&fit=crop&w=600&q=80' },
+      { id: 'bulldozers', name: 'Bulldozers', count: 0, image: 'https://images.unsplash.com/photo-1651260282644-6b3763d2acbc?auto=format&fit=crop&w=600&q=80' },
+      { id: 'loaders', name: 'Loaders', count: 0, image: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Caterpillar_950k_Wheel_Loader.jpg' },
+      { id: 'concrete-mixers', name: 'Concrete Mixers', count: 0, image: 'https://images.unsplash.com/photo-1527410651988-c2f385ccd3f7?auto=format&fit=crop&w=600&q=80' },
       { id: 'trucks', name: 'Trucks', count: 0, image: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=600&q=80' },
-      { id: 'lifting-equipment', name: 'Lifting Equipment', count: 0, image: 'https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=600&q=80' },
-      { id: 'other-machinery', name: 'Other Machinery', count: 0, image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80' }
+      { id: 'lifting-equipment', name: 'Lifting Equipment', count: 0, image: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=600&q=80' },
+      { id: 'other-machinery', name: 'Other Machinery', count: 0, image: 'https://upload.wikimedia.org/wikipedia/commons/6/6a/Roadroller.jpg' }
     ];
 
     const allApproved = await (await db.collection('equipment').find({ status: 'Approved' })).toArray();
