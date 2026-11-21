@@ -148,7 +148,7 @@ export async function seedDatabase() {
       condition: 'Excellent',
       brand: 'Caterpillar',
       model: 'D6T XL Tier 4F',
-      image: 'https://images.unsplash.com/photo-1651260282644-6b3763d2acbc?auto=format&fit=crop&w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200&q=80',
       terms: 'Lowbed transport trailer dispatch arranged across Bangladesh. Daily maintenance log required.',
       status: 'Approved',
       rating: 5.0,
@@ -281,7 +281,7 @@ export async function seedDatabase() {
     'Genie S-65 Telescopic Boom Lift': { 
       location: 'Patenga Industrial Port, Chattogram', 
       price: 32000, 
-      image: 'https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80' 
+      image: 'https://images.unsplash.com/photo-1579487785973-74d2ca7abdd5?auto=format&fit=crop&w=1200&q=80' 
     },
     'Chauvet Rogue R3 Beam Stage Lights (Pack of 4)': { location: 'Mirpur DOHS Convention Zone, Dhaka', price: 15000 },
     'Kubota M7-172 Deluxe Tractor with Loader': { location: 'Rangpur Agricultural Area, Rangpur', price: 25000 },

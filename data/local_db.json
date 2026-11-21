@@ -51,11 +51,11 @@
       "status": "Approved",
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-08T14:54:41.979Z",
+      "createdAt": "2026-11-09T06:56:19.492Z",
       "_id": "6affc217a3282c28aad93613",
       "rating": 4.9,
       "reviewCount": 38,
-      "updatedAt": "2026-11-20T14:54:41.983Z"
+      "updatedAt": "2026-11-21T06:56:19.511Z"
     },
     {
       "name": "Sony FX3 Full-Frame Cinema Package",
@@ -75,7 +75,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-10T03:44:23.522Z",
       "_id": "6affc217a3282c28aad93614",
-      "updatedAt": "2026-11-20T14:54:42.007Z"
+      "updatedAt": "2026-11-21T06:56:19.540Z"
     },
     {
       "name": "Ford F-550 Super Duty Flatbed Truck",
@@ -95,7 +95,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-12T03:44:23.522Z",
       "_id": "6affc217a3282c28aad93615",
-      "updatedAt": "2026-11-20T14:54:42.009Z"
+      "updatedAt": "2026-11-21T06:56:19.542Z"
     },
     {
       "name": "John Deere 6R 195 Utility Farm Tractor",
@@ -115,7 +115,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-13T03:44:23.522Z",
       "_id": "6affc217a3282c28aad93616",
-      "updatedAt": "2026-11-20T14:54:42.010Z"
+      "updatedAt": "2026-11-21T06:56:19.546Z"
     },
     {
       "name": "DJI Matrice 350 RTK Commercial Drone",
@@ -135,7 +135,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-14T03:44:23.522Z",
       "_id": "6affc217a3282c28aad93617",
-      "updatedAt": "2026-11-20T14:54:42.011Z"
+      "updatedAt": "2026-11-21T06:56:19.548Z"
     },
     {
       "name": "JBL VTX A8 Compact Line Array Sound System",
@@ -155,7 +155,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-15T03:44:23.522Z",
       "_id": "6affc217a3282c28aad93618",
-      "updatedAt": "2026-11-20T14:54:42.012Z"
+      "updatedAt": "2026-11-21T06:56:19.549Z"
     },
     {
       "name": "Bobcat T770 Compact Track Loader",
@@ -175,7 +175,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-16T03:44:23.522Z",
       "_id": "6affc217a3282c28aad93619",
-      "updatedAt": "2026-11-20T14:54:42.013Z"
+      "updatedAt": "2026-11-21T06:56:19.550Z"
     },
     {
       "name": "RED Komodo 6K Production Kit",
@@ -195,7 +195,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-17T03:44:23.522Z",
       "_id": "6affc217a3282c28aad9361a",
-      "updatedAt": "2026-11-20T14:54:42.014Z"
+      "updatedAt": "2026-11-21T06:56:19.551Z"
     },
     {
       "name": "Genie S-65 Telescopic Boom Lift",
@@ -208,14 +208,14 @@
       "condition": "Inspected & Certified",
       "brand": "Genie",
       "model": "S-65 4WD",
-      "image": "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
+      "image": "https://images.unsplash.com/photo-1579487785973-74d2ca7abdd5?auto=format&fit=crop&w=1200&q=80",
       "terms": "Harness and OSHA aerial lift certification required for all operators.",
       "status": "Approved",
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-18T03:44:23.522Z",
       "_id": "6affc217a3282c28aad9361b",
-      "updatedAt": "2026-11-20T14:54:42.016Z"
+      "updatedAt": "2026-11-21T06:56:19.552Z"
     },
     {
       "name": "Chauvet Rogue R3 Beam Stage Lights (Pack of 4)",
@@ -235,7 +235,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-19T03:44:23.522Z",
       "_id": "6affc217a3282c28aad9361c",
-      "updatedAt": "2026-11-20T14:54:42.017Z"
+      "updatedAt": "2026-11-21T06:56:19.553Z"
     },
     {
       "name": "Kubota M7-172 Deluxe Tractor with Loader",
@@ -255,7 +255,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-20T03:44:23.522Z",
       "_id": "6affc217a3282c28aad9361d",
-      "updatedAt": "2026-11-20T14:54:42.018Z"
+      "updatedAt": "2026-11-21T06:56:19.555Z"
     },
     {
       "name": "Fluke Ti480 PRO High-Resolution Thermal Imager",
@@ -275,7 +275,7 @@
       "ownerName": "Apex Equipment Pro",
       "createdAt": "2026-11-20T03:44:23.522Z",
       "_id": "6affc217a3282c28aad9361e",
-      "updatedAt": "2026-11-20T14:54:42.019Z"
+      "updatedAt": "2026-11-21T06:56:19.556Z"
     },
     {
       "name": "Liebherr LTM 1100 All-Terrain Mobile Crane",
@@ -295,9 +295,9 @@
       "reviewCount": 22,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-09T14:54:41.980Z",
+      "createdAt": "2026-11-10T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a2c",
-      "updatedAt": "2026-11-20T14:54:41.986Z"
+      "updatedAt": "2026-11-21T06:56:19.514Z"
     },
     {
       "name": "Cummins 150kW Tier 4 Diesel Generator",
@@ -317,9 +317,9 @@
       "reviewCount": 45,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-10T14:54:41.980Z",
+      "createdAt": "2026-11-11T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a2d",
-      "updatedAt": "2026-11-20T14:54:41.988Z"
+      "updatedAt": "2026-11-21T06:56:19.516Z"
     },
     {
       "name": "Toyota 8FGU25 Heavy-Duty Pneumatic Forklift",
@@ -339,9 +339,9 @@
       "reviewCount": 31,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-11T14:54:41.980Z",
+      "createdAt": "2026-11-12T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a2e",
-      "updatedAt": "2026-11-20T14:54:41.990Z"
+      "updatedAt": "2026-11-21T06:56:19.517Z"
     },
     {
       "name": "Caterpillar D6T Heavy Crawler Bulldozer",
@@ -354,16 +354,16 @@
       "condition": "Excellent",
       "brand": "Caterpillar",
       "model": "D6T XL Tier 4F",
-      "image": "https://images.unsplash.com/photo-1651260282644-6b3763d2acbc?auto=format&fit=crop&w=1200&q=80",
+      "image": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1200&q=80",
       "terms": "Lowbed transport trailer dispatch arranged across Bangladesh. Daily maintenance log required.",
       "status": "Approved",
       "rating": 5,
       "reviewCount": 19,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-12T14:54:41.980Z",
+      "createdAt": "2026-11-13T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a2f",
-      "updatedAt": "2026-11-20T14:54:41.991Z"
+      "updatedAt": "2026-11-21T06:56:19.519Z"
     },
     {
       "name": "John Deere 544P Wheel Loader",
@@ -383,9 +383,9 @@
       "reviewCount": 27,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-13T14:54:41.980Z",
+      "createdAt": "2026-11-14T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a30",
-      "updatedAt": "2026-11-20T14:54:41.993Z"
+      "updatedAt": "2026-11-21T06:56:19.521Z"
     },
     {
       "name": "Multiquip Whiteman 9-Cu-Ft Towable Concrete Mixer",
@@ -405,9 +405,9 @@
       "reviewCount": 40,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-14T14:54:41.980Z",
+      "createdAt": "2026-11-15T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a31",
-      "updatedAt": "2026-11-20T14:54:41.994Z"
+      "updatedAt": "2026-11-21T06:56:19.522Z"
     },
     {
       "name": "Peterbilt 348 Heavy-Duty Tandem Dump Truck",
@@ -427,9 +427,9 @@
       "reviewCount": 29,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-15T14:54:41.980Z",
+      "createdAt": "2026-11-16T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a32",
-      "updatedAt": "2026-11-20T14:54:41.996Z"
+      "updatedAt": "2026-11-21T06:56:19.528Z"
     },
     {
       "name": "Genie S-65 Telescopic Rough-Terrain Boom Lift",
@@ -449,9 +449,9 @@
       "reviewCount": 52,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-16T14:54:41.980Z",
+      "createdAt": "2026-11-17T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a33",
-      "updatedAt": "2026-11-20T14:54:42.002Z"
+      "updatedAt": "2026-11-21T06:56:19.535Z"
     },
     {
       "name": "Wacker Neuson DPU6555 Heavy Reversible Plate Compactor",
@@ -471,9 +471,9 @@
       "reviewCount": 18,
       "ownerEmail": "owner@rentalequip.com",
       "ownerName": "Apex Equipment Pro",
-      "createdAt": "2026-11-17T14:54:41.980Z",
+      "createdAt": "2026-11-18T06:56:19.509Z",
       "_id": "6afff0e18ab535911d632a34",
-      "updatedAt": "2026-11-20T14:54:42.006Z"
+      "updatedAt": "2026-11-21T06:56:19.538Z"
     }
   ],
   "bookings": [
