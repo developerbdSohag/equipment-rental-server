@@ -5,10 +5,12 @@ import { verifyToken, verifyOwner, verifyAdmin } from '../middleware/auth.js';
 const router = express.Router();
 
 const idFilter = (id) => {
+  if (!id) return { _id: null };
+  const strId = id?.toString?.() || id;
   try {
-    return { $or: [{ _id: id }, { _id: new ObjectId(id) }] };
+    return { $or: [{ _id: strId }, { _id: new ObjectId(strId) }] };
   } catch {
-    return { _id: id };
+    return { _id: strId };
   }
 };
 
@@ -63,7 +65,7 @@ router.post('/', verifyToken, async (req, res) => {
 
     // Calculate total rental amount
     const durationDays = calculateDays(startDate, endDate);
-    let unitRate = equipment.rentalPrice;
+    let unitRate = Number(equipment.rentalPrice) || 0;
 
     if (equipment.rentalType === 'Weekly') {
       unitRate = unitRate / 7;
@@ -81,7 +83,7 @@ router.post('/', verifyToken, async (req, res) => {
       rentalPrice: equipment.rentalPrice,
       rentalType: equipment.rentalType,
       ownerEmail: equipment.ownerEmail,
-      ownerName: equipment.ownerName || 'Owner',
+      ownerName: equipment.ownerName || 'Apex Equipment Pro',
       customerEmail: req.user.email,
       customerName: req.user.name || 'Customer',
       contactNumber,
@@ -115,7 +117,7 @@ router.post('/', verifyToken, async (req, res) => {
 router.get('/my-rentals', verifyToken, async (req, res) => {
   try {
     const db = getDB();
-    const cursor = await db.collection('bookings').find({ customerEmail: req.user.email });
+    const cursor = db.collection('bookings').find({ customerEmail: req.user.email });
     const rentals = await cursor.sort({ createdAt: -1 }).toArray();
     return res.json({ success: true, rentals });
   } catch (error) {
@@ -127,7 +129,7 @@ router.get('/my-rentals', verifyToken, async (req, res) => {
 router.get('/owner-rentals', verifyToken, verifyOwner, async (req, res) => {
   try {
     const db = getDB();
-    const cursor = await db.collection('bookings').find({ ownerEmail: req.user.email });
+    const cursor = db.collection('bookings').find({ ownerEmail: req.user.email });
     const rentals = await cursor.sort({ createdAt: -1 }).toArray();
     return res.json({ success: true, rentals });
   } catch (error) {
@@ -139,11 +141,35 @@ router.get('/owner-rentals', verifyToken, verifyOwner, async (req, res) => {
 router.get('/all', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const db = getDB();
-    const cursor = await db.collection('bookings').find({});
+    const cursor = db.collection('bookings').find({});
     const rentals = await cursor.sort({ createdAt: -1 }).toArray();
     return res.json({ success: true, rentals });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to fetch all rentals.' });
+  }
+});
+
+// POST /api/bookings/sync - Synchronize client bookings across serverless containers
+router.post('/sync', verifyToken, async (req, res) => {
+  try {
+    const { bookings } = req.body;
+    if (!Array.isArray(bookings) || bookings.length === 0) {
+      return res.json({ success: true, synced: 0 });
+    }
+
+    const db = getDB();
+    let synced = 0;
+    for (const b of bookings) {
+      if (!b || !b._id) continue;
+      const exists = await db.collection('bookings').findOne(idFilter(b._id));
+      if (!exists) {
+        await db.collection('bookings').insertOne(b);
+        synced++;
+      }
+    }
+    return res.json({ success: true, synced });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to sync bookings.' });
   }
 });
 
@@ -206,7 +232,7 @@ router.put('/:id/status', verifyToken, async (req, res) => {
       const eq = await db.collection('equipment').findOne(eqFilter);
       if (eq) {
         await db.collection('equipment').updateOne(eqFilter, {
-          $set: { availableQuantity: eq.availableQuantity + booking.quantity }
+          $set: { availableQuantity: (eq.availableQuantity || 0) + (booking.quantity || 1) }
         });
       }
     }
@@ -214,6 +240,47 @@ router.put('/:id/status', verifyToken, async (req, res) => {
     return res.json({ success: true, message: `Booking status updated to ${status}.` });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to update status.' });
+  }
+});
+
+// PUT /api/bookings/:id/payment-status - Admin update payment status
+router.put('/:id/payment-status', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { paymentStatus } = req.body;
+    const validStatuses = ['Paid', 'Unpaid', 'Refunded'];
+    if (!validStatuses.includes(paymentStatus)) {
+      return res.status(400).json({ success: false, message: 'Invalid payment status.' });
+    }
+
+    const db = getDB();
+    const filter = idFilter(req.params.id);
+    const booking = await db.collection('bookings').findOne(filter);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    await db.collection('bookings').updateOne(filter, { $set: { paymentStatus } });
+    return res.json({ success: true, message: `Payment status updated to ${paymentStatus}.` });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to update payment status.' });
+  }
+});
+
+// DELETE /api/bookings/:id - Admin delete booking
+router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const db = getDB();
+    const filter = idFilter(req.params.id);
+    const booking = await db.collection('bookings').findOne(filter);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    await db.collection('bookings').deleteOne(filter);
+    return res.json({ success: true, message: 'Booking deleted successfully.' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to delete booking.' });
   }
 });
 

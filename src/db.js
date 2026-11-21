@@ -192,9 +192,23 @@ class LocalDatabase {
     if (isServerless) {
       this.filePath = path.join('/tmp', 'gearup_local_db.json');
       try {
-        if (!fs.existsSync(this.filePath) && fs.existsSync(this.originalFilePath)) {
+        if (fs.existsSync(this.originalFilePath)) {
           const initialData = fs.readFileSync(this.originalFilePath, 'utf-8');
-          fs.writeFileSync(this.filePath, initialData, 'utf-8');
+          let shouldCopy = !fs.existsSync(this.filePath);
+          if (!shouldCopy) {
+            try {
+              const origStat = fs.statSync(this.originalFilePath);
+              const tmpStat = fs.statSync(this.filePath);
+              if (origStat.mtimeMs > tmpStat.mtimeMs) {
+                shouldCopy = true;
+              }
+            } catch {
+              shouldCopy = true;
+            }
+          }
+          if (shouldCopy) {
+            fs.writeFileSync(this.filePath, initialData, 'utf-8');
+          }
         }
       } catch (e) {
         console.warn('Could not initialize /tmp db copy:', e.message);
