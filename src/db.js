@@ -35,7 +35,14 @@ class LocalCollection {
         if (key === '$or' && Array.isArray(val)) {
           const matchOr = val.some(subQuery => {
             return Object.entries(subQuery).every(([k, v]) => {
-              if (v instanceof RegExp) return v.test(item[k] || '');
+              const itemVal = item[k] ?? '';
+              if (v instanceof RegExp) return v.test(itemVal.toString());
+              if (v && typeof v === 'object') {
+                if (v.$regex !== undefined) {
+                  const reg = v.$regex instanceof RegExp ? v.$regex : new RegExp(v.$regex, v.$options || 'i');
+                  return reg.test(itemVal.toString());
+                }
+              }
               return item[k] === v;
             });
           });
@@ -49,14 +56,22 @@ class LocalCollection {
           continue;
         }
         if (val && typeof val === 'object' && !(val instanceof RegExp)) {
-          if (val.$gte !== undefined && item[key] < val.$gte) return false;
-          if (val.$lte !== undefined && item[key] > val.$lte) return false;
-          if (val.$ne !== undefined && item[key] === val.$ne) return false;
-          if (val.$in !== undefined && !val.$in.includes(item[key])) return false;
+          const itemVal = item[key];
+          if (val.$regex !== undefined) {
+            const reg = val.$regex instanceof RegExp ? val.$regex : new RegExp(val.$regex, val.$options || 'i');
+            if (!reg.test(itemVal !== undefined && itemVal !== null ? itemVal.toString() : '')) return false;
+          }
+          if (val.$gte !== undefined && Number(itemVal) < Number(val.$gte)) return false;
+          if (val.$lte !== undefined && Number(itemVal) > Number(val.$lte)) return false;
+          if (val.$gt !== undefined && Number(itemVal) <= Number(val.$gt)) return false;
+          if (val.$lt !== undefined && Number(itemVal) >= Number(val.$lt)) return false;
+          if (val.$ne !== undefined && itemVal === val.$ne) return false;
+          if (val.$in !== undefined && Array.isArray(val.$in) && !val.$in.includes(itemVal)) return false;
+          if (val.$eq !== undefined && itemVal !== val.$eq) return false;
           continue;
         }
         if (val instanceof RegExp) {
-          if (!val.test(item[key] || '')) return false;
+          if (!val.test(item[key] !== undefined && item[key] !== null ? item[key].toString() : '')) return false;
           continue;
         }
         if (item[key] !== val) return false;
@@ -70,8 +85,13 @@ class LocalCollection {
         const [field, order] = Object.entries(sortObj)[0] || [];
         if (field) {
           this._data.sort((a, b) => {
-            if (a[field] < b[field]) return order === 1 ? -1 : 1;
-            if (a[field] > b[field]) return order === 1 ? 1 : -1;
+            const valA = a[field];
+            const valB = b[field];
+            if (typeof valA === 'number' && typeof valB === 'number') {
+              return order === 1 ? valA - valB : valB - valA;
+            }
+            if (valA < valB) return order === 1 ? -1 : 1;
+            if (valA > valB) return order === 1 ? 1 : -1;
             return 0;
           });
         }
