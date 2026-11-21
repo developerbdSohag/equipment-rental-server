@@ -5,10 +5,12 @@ import { verifyToken } from '../middleware/auth.js';
 const router = express.Router();
 
 const idFilter = (id) => {
+  if (!id) return { _id: null };
+  const strId = id?.toString?.() || id;
   try {
-    return { $or: [{ _id: id }, { _id: new ObjectId(id) }] };
+    return { $or: [{ _id: strId }, { _id: new ObjectId(strId) }] };
   } catch {
-    return { _id: id };
+    return { _id: strId };
   }
 };
 
@@ -22,10 +24,13 @@ router.get('/', verifyToken, async (req, res) => {
     // Populate equipment details for each favorite
     const populated = await Promise.all(
       favorites.map(async (fav) => {
+        if (fav.equipment && fav.equipment._id) {
+          return fav;
+        }
         const equipment = await db.collection('equipment').findOne(idFilter(fav.equipmentId));
         return {
           ...fav,
-          equipment: equipment || null
+          equipment: equipment || fav.equipment || null
         };
       })
     );
@@ -35,6 +40,7 @@ router.get('/', verifyToken, async (req, res) => {
 
     return res.json({ success: true, favorites: validFavorites });
   } catch (error) {
+    console.error('Error retrieving favorites:', error);
     return res.status(500).json({ success: false, message: 'Failed to retrieve favorites.' });
   }
 });
@@ -43,9 +49,12 @@ router.get('/', verifyToken, async (req, res) => {
 router.get('/check/:equipmentId', verifyToken, async (req, res) => {
   try {
     const db = getDB();
+    const { equipmentId } = req.params;
     const existing = await db.collection('favorites').findOne({
-      customerEmail: req.user.email,
-      equipmentId: req.params.equipmentId
+      $or: [
+        { customerEmail: req.user.email, equipmentId: equipmentId },
+        { customerEmail: req.user.email, 'equipment._id': equipmentId }
+      ]
     });
 
     return res.json({ success: true, isFavorite: !!existing });
@@ -60,14 +69,23 @@ router.post('/:equipmentId', verifyToken, async (req, res) => {
     const { equipmentId } = req.params;
     const db = getDB();
 
-    const equipment = await db.collection('equipment').findOne(idFilter(equipmentId));
+    let equipment = await db.collection('equipment').findOne(idFilter(equipmentId));
+    if (!equipment && req.body.equipment) {
+      equipment = req.body.equipment;
+    }
+
     if (!equipment) {
       return res.status(404).json({ success: false, message: 'Equipment not found.' });
     }
 
+    const canonicalId = equipment._id?.toString?.() || equipmentId;
+
     const existing = await db.collection('favorites').findOne({
-      customerEmail: req.user.email,
-      equipmentId
+      $or: [
+        { customerEmail: req.user.email, equipmentId: canonicalId },
+        { customerEmail: req.user.email, equipmentId: equipmentId },
+        { customerEmail: req.user.email, 'equipment._id': canonicalId }
+      ]
     });
 
     if (existing) {
@@ -76,7 +94,8 @@ router.post('/:equipmentId', verifyToken, async (req, res) => {
 
     const newFav = {
       customerEmail: req.user.email,
-      equipmentId,
+      equipmentId: canonicalId,
+      equipment: equipment,
       addedAt: new Date().toISOString()
     };
 
@@ -84,9 +103,11 @@ router.post('/:equipmentId', verifyToken, async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Equipment added to favorites!'
+      message: 'Equipment added to favorites!',
+      favorite: newFav
     });
   } catch (error) {
+    console.error('Error adding to favorites:', error);
     return res.status(500).json({ success: false, message: 'Failed to add to favorites.' });
   }
 });
@@ -98,12 +119,15 @@ router.delete('/:equipmentId', verifyToken, async (req, res) => {
     const db = getDB();
 
     await db.collection('favorites').deleteOne({
-      customerEmail: req.user.email,
-      equipmentId
+      $or: [
+        { customerEmail: req.user.email, equipmentId: equipmentId },
+        { customerEmail: req.user.email, 'equipment._id': equipmentId }
+      ]
     });
 
     return res.json({ success: true, message: 'Equipment removed from favorites.' });
   } catch (error) {
+    console.error('Error removing favorite:', error);
     return res.status(500).json({ success: false, message: 'Failed to remove from favorites.' });
   }
 });

@@ -11,6 +11,18 @@ let client = null;
 let db = null;
 let isUsingLocalFallback = false;
 
+function getDeepVal(obj, keyPath) {
+  if (!obj || typeof obj !== 'object') return undefined;
+  if (obj[keyPath] !== undefined) return obj[keyPath];
+  const parts = keyPath.split('.');
+  let curr = obj;
+  for (const part of parts) {
+    if (curr === null || curr === undefined) return undefined;
+    curr = curr[part];
+  }
+  return curr;
+}
+
 // In-memory / JSON fallback store if MongoDB Atlas is not yet connected or offline
 class LocalCollection {
   constructor(name, getDbData, saveDbData) {
@@ -28,65 +40,62 @@ class LocalCollection {
     return data[this.name];
   }
 
-  async find(query = {}) {
-    const items = this._getItems();
-    const filtered = items.filter(item => {
-      for (const [key, val] of Object.entries(query)) {
-        if (key === '$or' && Array.isArray(val)) {
-          const matchOr = val.some(subQuery => {
-            return Object.entries(subQuery).every(([k, v]) => {
-              const itemVal = item[k] ?? '';
-              if (v instanceof RegExp) return v.test(itemVal.toString());
-              if (v && typeof v === 'object') {
-                if (v.$regex !== undefined) {
-                  const reg = v.$regex instanceof RegExp ? v.$regex : new RegExp(v.$regex, v.$options || 'i');
-                  return reg.test(itemVal.toString());
-                }
-              }
-              return item[k] === v;
-            });
-          });
-          if (!matchOr) return false;
-          continue;
-        }
-        if (key === '_id') {
-          const targetId = val?.toString?.() || val;
-          const itemId = item._id?.toString?.() || item._id;
-          if (itemId !== targetId) return false;
-          continue;
-        }
-        if (val && typeof val === 'object' && !(val instanceof RegExp)) {
-          const itemVal = item[key];
-          if (val.$regex !== undefined) {
-            const reg = val.$regex instanceof RegExp ? val.$regex : new RegExp(val.$regex, val.$options || 'i');
-            if (!reg.test(itemVal !== undefined && itemVal !== null ? itemVal.toString() : '')) return false;
-          }
-          if (val.$gte !== undefined && Number(itemVal) < Number(val.$gte)) return false;
-          if (val.$lte !== undefined && Number(itemVal) > Number(val.$lte)) return false;
-          if (val.$gt !== undefined && Number(itemVal) <= Number(val.$gt)) return false;
-          if (val.$lt !== undefined && Number(itemVal) >= Number(val.$lt)) return false;
-          if (val.$ne !== undefined && itemVal === val.$ne) return false;
-          if (val.$in !== undefined && Array.isArray(val.$in) && !val.$in.includes(itemVal)) return false;
-          if (val.$eq !== undefined && itemVal !== val.$eq) return false;
-          continue;
-        }
-        if (val instanceof RegExp) {
-          if (!val.test(item[key] !== undefined && item[key] !== null ? item[key].toString() : '')) return false;
-          continue;
-        }
-        if (item[key] !== val) return false;
+  _matches(item, query = {}) {
+    if (!query || Object.keys(query).length === 0) return true;
+
+    for (const [key, val] of Object.entries(query)) {
+      if (key === '$or' && Array.isArray(val)) {
+        const matchOr = val.some(subQuery => this._matches(item, subQuery));
+        if (!matchOr) return false;
+        continue;
       }
-      return true;
-    });
+
+      if (key === '_id') {
+        const targetId = val?.toString?.() || val;
+        const itemId = item._id?.toString?.() || item._id;
+        if (itemId !== targetId) return false;
+        continue;
+      }
+
+      const itemVal = getDeepVal(item, key);
+
+      if (val && typeof val === 'object' && !(val instanceof RegExp)) {
+        if (val.$regex !== undefined) {
+          const reg = val.$regex instanceof RegExp ? val.$regex : new RegExp(val.$regex, val.$options || 'i');
+          if (!reg.test(itemVal !== undefined && itemVal !== null ? itemVal.toString() : '')) return false;
+        }
+        if (val.$gte !== undefined && Number(itemVal) < Number(val.$gte)) return false;
+        if (val.$lte !== undefined && Number(itemVal) > Number(val.$lte)) return false;
+        if (val.$gt !== undefined && Number(itemVal) <= Number(val.$gt)) return false;
+        if (val.$lt !== undefined && Number(itemVal) >= Number(val.$lt)) return false;
+        if (val.$ne !== undefined && itemVal === val.$ne) return false;
+        if (val.$in !== undefined && Array.isArray(val.$in) && !val.$in.includes(itemVal)) return false;
+        if (val.$eq !== undefined && itemVal !== val.$eq) return false;
+        continue;
+      }
+
+      if (val instanceof RegExp) {
+        if (!val.test(itemVal !== undefined && itemVal !== null ? itemVal.toString() : '')) return false;
+        continue;
+      }
+
+      if (itemVal !== val) return false;
+    }
+    return true;
+  }
+
+  find(query = {}) {
+    const items = this._getItems();
+    const filtered = items.filter(item => this._matches(item, query));
 
     return {
-      _data: filtered,
+      _data: [...filtered],
       sort(sortObj) {
         const [field, order] = Object.entries(sortObj)[0] || [];
         if (field) {
           this._data.sort((a, b) => {
-            const valA = a[field];
-            const valB = b[field];
+            const valA = getDeepVal(a, field);
+            const valB = getDeepVal(b, field);
             if (typeof valA === 'number' && typeof valB === 'number') {
               return order === 1 ? valA - valB : valB - valA;
             }
@@ -133,14 +142,7 @@ class LocalCollection {
   async updateOne(filter, update) {
     const data = this.getDbData();
     const items = data[this.name] || [];
-    const index = items.findIndex(item => {
-      if (filter._id) {
-        const targetId = filter._id?.toString?.() || filter._id;
-        const itemId = item._id?.toString?.() || item._id;
-        return itemId === targetId;
-      }
-      return Object.entries(filter).every(([k, v]) => item[k] === v);
-    });
+    const index = items.findIndex(item => this._matches(item, filter));
 
     if (index === -1) return { matchedCount: 0, modifiedCount: 0 };
 
@@ -158,14 +160,7 @@ class LocalCollection {
     const data = this.getDbData();
     const items = data[this.name] || [];
     const initialLen = items.length;
-    data[this.name] = items.filter(item => {
-      if (filter._id) {
-        const targetId = filter._id?.toString?.() || filter._id;
-        const itemId = item._id?.toString?.() || item._id;
-        return itemId !== targetId;
-      }
-      return !Object.entries(filter).every(([k, v]) => item[k] === v);
-    });
+    data[this.name] = items.filter(item => !this._matches(item, filter));
     this.saveDbData(data);
     return { deletedCount: initialLen - data[this.name].length, acknowledged: true };
   }
@@ -179,30 +174,78 @@ class LocalCollection {
 
 class LocalDatabase {
   constructor(filePath) {
-    this.filePath = filePath;
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, JSON.stringify({}), 'utf-8');
+    this.originalFilePath = filePath;
+    this.memoryCache = null;
+
+    // Detect serverless environment or read-only filesystem
+    const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || (() => {
+      try {
+        const testDir = path.dirname(filePath);
+        if (!fs.existsSync(testDir)) return true;
+        fs.accessSync(testDir, fs.constants.W_OK);
+        return false;
+      } catch {
+        return true;
+      }
+    })();
+
+    if (isServerless) {
+      this.filePath = path.join('/tmp', 'gearup_local_db.json');
+      try {
+        if (!fs.existsSync(this.filePath) && fs.existsSync(this.originalFilePath)) {
+          const initialData = fs.readFileSync(this.originalFilePath, 'utf-8');
+          fs.writeFileSync(this.filePath, initialData, 'utf-8');
+        }
+      } catch (e) {
+        console.warn('Could not initialize /tmp db copy:', e.message);
+      }
+    } else {
+      this.filePath = filePath;
+      const dir = path.dirname(filePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify({}), 'utf-8');
+      }
     }
   }
 
   getDbData() {
+    if (this.memoryCache) return this.memoryCache;
     try {
-      const content = fs.readFileSync(this.filePath, 'utf-8');
-      return JSON.parse(content || '{}');
+      if (fs.existsSync(this.filePath)) {
+        const content = fs.readFileSync(this.filePath, 'utf-8');
+        this.memoryCache = JSON.parse(content || '{}');
+        return this.memoryCache;
+      }
+      if (fs.existsSync(this.originalFilePath)) {
+        const content = fs.readFileSync(this.originalFilePath, 'utf-8');
+        this.memoryCache = JSON.parse(content || '{}');
+        return this.memoryCache;
+      }
+      this.memoryCache = {};
+      return this.memoryCache;
     } catch {
-      return {};
+      this.memoryCache = this.memoryCache || {};
+      return this.memoryCache;
     }
   }
 
   saveDbData(data) {
+    this.memoryCache = data;
     try {
       fs.writeFileSync(this.filePath, JSON.stringify(data, null, 2), 'utf-8');
     } catch (err) {
-      console.error('Failed to write local database file:', err.message);
+      const tmpPath = path.join('/tmp', 'gearup_local_db.json');
+      if (this.filePath !== tmpPath) {
+        try {
+          this.filePath = tmpPath;
+          fs.writeFileSync(this.filePath, JSON.stringify(data, null, 2), 'utf-8');
+          return;
+        } catch {}
+      }
+      console.warn('Local database file write notice:', err.message);
     }
   }
 
