@@ -213,14 +213,16 @@ router.get('/me', verifyToken, async (req, res) => {
 // PUT /api/auth/profile
 router.put('/profile', verifyToken, async (req, res) => {
   try {
-    const { name, photoURL, phone, address } = req.body;
+    const { name, photoURL, phone, address, bio, company } = req.body;
     const db = getDB();
 
     const updateFields = {};
     if (name) updateFields.name = name;
-    if (photoURL) updateFields.photoURL = photoURL;
+    if (photoURL !== undefined) updateFields.photoURL = photoURL;
     if (phone !== undefined) updateFields.phone = phone;
     if (address !== undefined) updateFields.address = address;
+    if (bio !== undefined) updateFields.bio = bio;
+    if (company !== undefined) updateFields.company = company;
 
     await db.collection('users').updateOne(
       { email: req.user.email },
@@ -237,6 +239,59 @@ router.put('/profile', verifyToken, async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to update profile.' });
+  }
+});
+
+// PUT /api/auth/change-password
+router.put('/change-password', verifyToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({ success: false, message: 'New password is required.' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ success: false, message: 'New passwords do not match.' });
+    }
+
+    if (!validatePassword(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must contain at least 6 characters, including at least one uppercase letter and one lowercase letter.'
+      });
+    }
+
+    const db = getDB();
+    const user = await db.collection('users').findOne({ email: req.user.email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User account not found.' });
+    }
+
+    // Verify current password if user has a hashed password in database
+    if (user.password && user.password.length > 0) {
+      if (!currentPassword) {
+        return res.status(400).json({ success: false, message: 'Current password is required.' });
+      }
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ success: false, message: 'Current password is incorrect.' });
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.collection('users').updateOne(
+      { email: req.user.email },
+      { $set: { password: hashedPassword, passwordUpdatedAt: new Date().toISOString() } }
+    );
+
+    return res.json({
+      success: true,
+      message: 'Password changed successfully! You can now use your new password.'
+    });
+  } catch (error) {
+    console.error('Change password error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to change password.' });
   }
 });
 
