@@ -149,6 +149,35 @@ router.get('/all', verifyToken, verifyAdmin, async (req, res) => {
   }
 });
 
+// GET /api/bookings/equipment/:equipmentId - Bookings for a specific equipment (Admin or Owner)
+router.get('/equipment/:equipmentId', verifyToken, async (req, res) => {
+  try {
+    const db = getDB();
+    const { equipmentId } = req.params;
+    const eqFilter = idFilter(equipmentId);
+    const eq = await db.collection('equipment').findOne(eqFilter);
+
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
+    const isOwner = req.user.role?.toLowerCase() === 'owner' || (eq && eq.ownerEmail === req.user.email);
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ success: false, message: 'Unauthorized to view equipment rentals.' });
+    }
+
+    const cursor = db.collection('bookings').find({
+      $or: [
+        { equipmentId: equipmentId },
+        { equipmentId: eq?._id?.toString?.() },
+        { equipmentName: eq?.name }
+      ]
+    });
+    const rentals = await cursor.sort({ createdAt: -1 }).toArray();
+    return res.json({ success: true, rentals });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch equipment rentals.' });
+  }
+});
+
 // POST /api/bookings/sync - Synchronize client bookings across serverless containers
 router.post('/sync', verifyToken, async (req, res) => {
   try {
@@ -183,7 +212,7 @@ router.get('/:id', verifyToken, async (req, res) => {
     }
 
     const isAdmin = req.user.role?.toLowerCase() === 'admin';
-    const isOwner = booking.ownerEmail === req.user.email;
+    const isOwner = req.user.role?.toLowerCase() === 'owner' || booking.ownerEmail === req.user.email;
     const isCustomer = booking.customerEmail === req.user.email;
 
     if (!isAdmin && !isOwner && !isCustomer) {
@@ -214,7 +243,7 @@ router.put('/:id/status', verifyToken, async (req, res) => {
     }
 
     const isAdmin = req.user.role?.toLowerCase() === 'admin';
-    const isOwner = booking.ownerEmail === req.user.email;
+    const isOwner = req.user.role?.toLowerCase() === 'owner' || booking.ownerEmail === req.user.email;
     const isCustomer = booking.customerEmail === req.user.email;
 
     // Customer can cancel if still pending/unpaid
@@ -243,8 +272,8 @@ router.put('/:id/status', verifyToken, async (req, res) => {
   }
 });
 
-// PUT /api/bookings/:id/payment-status - Admin update payment status
-router.put('/:id/payment-status', verifyToken, verifyAdmin, async (req, res) => {
+// PUT /api/bookings/:id/payment-status - Admin & Owner update payment status
+router.put('/:id/payment-status', verifyToken, async (req, res) => {
   try {
     const { paymentStatus } = req.body;
     const validStatuses = ['Paid', 'Unpaid', 'Refunded'];
@@ -260,7 +289,19 @@ router.put('/:id/payment-status', verifyToken, verifyAdmin, async (req, res) => 
       return res.status(404).json({ success: false, message: 'Booking not found.' });
     }
 
-    await db.collection('bookings').updateOne(filter, { $set: { paymentStatus } });
+    const isAdmin = req.user.role?.toLowerCase() === 'admin';
+    const isOwner = req.user.role?.toLowerCase() === 'owner' || booking.ownerEmail === req.user.email;
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ success: false, message: 'Unauthorized to update payment status.' });
+    }
+
+    const updateFields = { paymentStatus };
+    if (paymentStatus === 'Paid' && booking.bookingStatus === 'Pending') {
+      updateFields.bookingStatus = 'Confirmed';
+    }
+
+    await db.collection('bookings').updateOne(filter, { $set: updateFields });
     return res.json({ success: true, message: `Payment status updated to ${paymentStatus}.` });
   } catch (error) {
     return res.status(500).json({ success: false, message: 'Failed to update payment status.' });
