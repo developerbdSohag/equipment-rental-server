@@ -17,7 +17,7 @@ router.get('/categories', async (req, res) => {
   try {
     const db = getDB();
     const categoriesList = [
-      { id: 'excavators', name: 'Excavators', count: 0, image: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=600&q=80' },
+      { id: 'excavators', name: 'Excavators', count: 0, image: 'https://images.unsplash.com/photo-1503708928676-1cb796a0891e?auto=format&fit=crop&w=600&q=80' },
       { id: 'cranes', name: 'Cranes', count: 0, image: 'https://images.unsplash.com/photo-1575538633395-c773c6ea252d?auto=format&fit=crop&w=600&q=80' },
       { id: 'generators', name: 'Generators', count: 0, image: 'https://upload.wikimedia.org/wikipedia/commons/b/bb/Dieselgenerator.jpg' },
       { id: 'forklifts', name: 'Forklifts', count: 0, image: 'https://images.unsplash.com/photo-1645736315000-6f788915923b?auto=format&fit=crop&w=600&q=80' },
@@ -53,7 +53,7 @@ router.get('/categories', async (req, res) => {
           id: catName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           name: catName,
           count: count || 1,
-          image: 'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=600&q=80'
+          image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&q=80'
         });
       }
     }
