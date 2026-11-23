@@ -195,6 +195,57 @@ router.post('/google', async (req, res) => {
   }
 });
 
+// POST /api/auth/github
+router.post('/github', async (req, res) => {
+  try {
+    const { email, name, photoURL } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required for GitHub authentication.'
+      });
+    }
+
+    const db = getDB();
+    let user = await db.collection('users').findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      // Default to Customer role per requirement
+      const newUser = {
+        name: name || 'GitHub User',
+        email: email.toLowerCase(),
+        password: '', // Social user
+        photoURL: photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+        role: 'Customer',
+        phone: '',
+        address: '',
+        isGithubUser: true,
+        createdAt: new Date().toISOString()
+      };
+      const result = await db.collection('users').insertOne(newUser);
+      newUser._id = result.insertedId;
+      user = newUser;
+    }
+
+    const token = generateToken(user);
+    const { password: _, ...userWithoutPassword } = user;
+
+    return res.json({
+      success: true,
+      message: 'GitHub login successful!',
+      token,
+      user: userWithoutPassword
+    });
+  } catch (error) {
+    console.error('GitHub auth error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'GitHub authentication failed.'
+    });
+  }
+});
+
 // GET /api/auth/me
 router.get('/me', verifyToken, async (req, res) => {
   try {
